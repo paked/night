@@ -5,10 +5,12 @@ function preload() {
     game.load.image('player', 'assets/player.png');
     game.load.image('platform', 'assets/platform.png');
     game.load.image('star', 'assets/star.png');
+    game.load.image('fire', 'assets/fire.png');
 }
 
 // entities
 var player;
+var fire;
 var platforms;
 var stars;
 var scoreText;
@@ -50,7 +52,12 @@ function create() {
 
     stars.setAll('body.allowGravity', false);
 
+    fire = game.add.sprite(0, 600 - 16, 'fire');
+    game.physics.enable(fire, Phaser.Physics.ARCADE);
+    fire.body.allowGravity = false;
+
     scoreText = game.add.text(0, 0, _pointsText());
+    scoreText.font = 'Comic Sans MS';
 
     cursors = game.input.keyboard.createCursorKeys();
     jumpButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
@@ -64,10 +71,9 @@ function _pointsText() {
 function update() {
     game.physics.arcade.collide(player, platforms);
     game.physics.arcade.overlap(player, stars, incrementScore);
+    game.physics.arcade.overlap(player, fire, burnPlayer);
 
     scoreText.text = _pointsText();
-
-    game.backgroundColor = '#ff0000';
 
     player.body.velocity.x = 0;
 
@@ -88,4 +94,14 @@ function update() {
 function incrementScore(p, s) {
     s.kill();
     points += 1;
+}
+
+function burnPlayer(p, f) {
+    p.kill();
+
+    var t = game.add.text(0, 0, "you lose... nerd!"); 
+    t.anchor.set(0.5);
+    t.x = game.width / 2;
+    t.y = game.height / 2;
+    t.font = 'Impact';
 }
